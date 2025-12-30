@@ -21,12 +21,29 @@ namespace LibraryTrackingSystem
         [DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["BooksDB"].ConnectionString;
+        string _connectionString;
 
         public mainForm()
         {
-            InitializeComponent();
-            ToolTipMessage();
+            try
+            {
+                InitializeComponent();
+                
+                if (ConfigurationManager.ConnectionStrings["BooksDB"] == null || 
+                    string.IsNullOrWhiteSpace(ConfigurationManager.ConnectionStrings["BooksDB"].ConnectionString))
+                {
+                    MessageBox.Show("Database connection string is not configured. Please check App.config file.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Application.Exit();
+                    return;
+                }
+
+                _connectionString = ConfigurationManager.ConnectionStrings["BooksDB"].ConnectionString;
+                ToolTipMessage();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while initializing the form: {ex.Message}", "Initialization Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -44,8 +61,15 @@ namespace LibraryTrackingSystem
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ListBooks();
-            timer.Start();
+            try
+            {
+                ListBooks();
+                timer.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while loading the form: {ex.Message}", "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -53,13 +77,24 @@ namespace LibraryTrackingSystem
         /// </summary>
         void ListBooks()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Books", connection);
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-                dgwBooks.DataSource = table;
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Books", connection);
+                    DataTable table = new DataTable();
+                    adapter.Fill(table);
+                    dgwBooks.DataSource = table;
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database error occurred while loading books: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while loading books: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -97,31 +132,46 @@ namespace LibraryTrackingSystem
         /// </summary>
         private void btnSave_Click(object sender, EventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-
-                string query = @"INSERT INTO Books
-                                (Title, Genre, Author, Language, Publisher, PageCount, PublicationYear)
-                                VALUES (@title, @genre, @author, @language, @publisher, @pageCount, @year)";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@title", tbxTitle.Text);
-                    command.Parameters.AddWithValue("@genre", tbxGenre.Text);
-                    command.Parameters.AddWithValue("@author", tbxAuthor.Text);
-                    command.Parameters.AddWithValue("@language", tbxLanguage.Text);
-                    command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
-                    command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
-                    command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
+                    connection.Open();
 
-                    command.ExecuteNonQuery();
+                    string query = @"INSERT INTO Books
+                                    (Title, Genre, Author, Language, Publisher, PageCount, PublicationYear)
+                                    VALUES (@title, @genre, @author, @language, @publisher, @pageCount, @year)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@title", tbxTitle.Text);
+                        command.Parameters.AddWithValue("@genre", tbxGenre.Text);
+                        command.Parameters.AddWithValue("@author", tbxAuthor.Text);
+                        command.Parameters.AddWithValue("@language", tbxLanguage.Text);
+                        command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
+                        command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
+                        command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
+
+                        command.ExecuteNonQuery();
+                    }
                 }
-            }
 
-            MessageBox.Show("Book added successfully.", "Successful transaction");
-            Clear();
-            ListBooks();
+                MessageBox.Show("Book added successfully.", "Successful transaction");
+                Clear();
+                ListBooks();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Please enter valid numeric values for Page Count and Publication Year.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database error occurred while adding the book: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while adding the book: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -129,40 +179,55 @@ namespace LibraryTrackingSystem
         /// </summary>
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbxId.Text))
+            try
             {
-                MessageBox.Show("Please select a book first.", "Warning");
-                return;
-            }
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string query = @"UPDATE Books SET
-                                 Title=@title, Genre=@genre, Author=@author,
-                                 Language=@language, Publisher=@publisher,
-                                 PageCount=@pageCount, PublicationYear=@year
-                                 WHERE BookId=@bookId";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
+                if (string.IsNullOrWhiteSpace(tbxId.Text))
                 {
-                    command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
-                    command.Parameters.AddWithValue("@title", tbxTitle.Text);
-                    command.Parameters.AddWithValue("@genre", tbxGenre.Text);
-                    command.Parameters.AddWithValue("@author", tbxAuthor.Text);
-                    command.Parameters.AddWithValue("@language", tbxLanguage.Text);
-                    command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
-                    command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
-                    command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
-
-                    command.ExecuteNonQuery();
+                    MessageBox.Show("Please select a book first.", "Warning");
+                    return;
                 }
-            }
 
-            MessageBox.Show("Book updated successfully.", "Successful transaction");
-            Clear();
-            ListBooks();
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"UPDATE Books SET
+                                     Title=@title, Genre=@genre, Author=@author,
+                                     Language=@language, Publisher=@publisher,
+                                     PageCount=@pageCount, PublicationYear=@year
+                                     WHERE BookId=@bookId";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
+                        command.Parameters.AddWithValue("@title", tbxTitle.Text);
+                        command.Parameters.AddWithValue("@genre", tbxGenre.Text);
+                        command.Parameters.AddWithValue("@author", tbxAuthor.Text);
+                        command.Parameters.AddWithValue("@language", tbxLanguage.Text);
+                        command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
+                        command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
+                        command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show("Book updated successfully.", "Successful transaction");
+                Clear();
+                ListBooks();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Please enter valid numeric values for ID, Page Count and Publication Year.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database error occurred while updating the book: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while updating the book: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -170,35 +235,53 @@ namespace LibraryTrackingSystem
         /// </summary>
         private void dgwBooks_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
-
-            int bookId = Convert.ToInt32(dgwBooks.Rows[e.RowIndex].Cells[0].Value);
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
+                if (e.RowIndex < 0) return;
 
-                string query = "SELECT * FROM Books WHERE BookId=@bookId";
+                if (dgwBooks.Rows[e.RowIndex].Cells[0].Value == null)
+                    return;
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                int bookId = Convert.ToInt32(dgwBooks.Rows[e.RowIndex].Cells[0].Value);
+
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@bookId", bookId);
+                    connection.Open();
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    string query = "SELECT * FROM Books WHERE BookId=@bookId";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@bookId", bookId);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            tbxId.Text = reader["BookId"].ToString();
-                            tbxTitle.Text = reader["Title"].ToString();
-                            tbxGenre.Text = reader["Genre"].ToString();
-                            tbxAuthor.Text = reader["Author"].ToString();
-                            tbxLanguage.Text = reader["Language"].ToString();
-                            tbxPublisher.Text = reader["Publisher"].ToString();
-                            tbxPageCount.Text = reader["PageCount"].ToString();
-                            tbxPublicationYear.Text = reader["PublicationYear"].ToString();
+                            if (reader.Read())
+                            {
+                                tbxId.Text = reader["BookId"].ToString();
+                                tbxTitle.Text = reader["Title"].ToString();
+                                tbxGenre.Text = reader["Genre"].ToString();
+                                tbxAuthor.Text = reader["Author"].ToString();
+                                tbxLanguage.Text = reader["Language"].ToString();
+                                tbxPublisher.Text = reader["Publisher"].ToString();
+                                tbxPageCount.Text = reader["PageCount"].ToString();
+                                tbxPublicationYear.Text = reader["PublicationYear"].ToString();
+                            }
                         }
                     }
                 }
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Invalid book ID format.", "Invalid Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database error occurred while loading book details: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while loading book details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -228,37 +311,63 @@ namespace LibraryTrackingSystem
         /// </summary>
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbxId.Text))
+            try
             {
-                MessageBox.Show("Please select a book first.", "Warning");
-                return;
-            }
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                string commandText = "DELETE FROM Books WHERE BookId=@bookId";
-
-                using (SqlCommand command = new SqlCommand(commandText, connection))
+                if (string.IsNullOrWhiteSpace(tbxId.Text))
                 {
-                    command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
-                    command.ExecuteNonQuery();
+                    MessageBox.Show("Please select a book first.", "Warning");
+                    return;
                 }
-            }
 
-            MessageBox.Show("The book has been successfully deleted!", "Successful transaction");
-            Clear();
-            ListBooks();
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this book?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                    return;
+
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string commandText = "DELETE FROM Books WHERE BookId=@bookId";
+
+                    using (SqlCommand command = new SqlCommand(commandText, connection))
+                    {
+                        command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
+                        command.ExecuteNonQuery();
+                    }
+                }
+
+                MessageBox.Show("The book has been successfully deleted!", "Successful transaction");
+                Clear();
+                ListBooks();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Please enter a valid book ID.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database error occurred while deleting the book: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while deleting the book: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void pbxAbout_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(
-             new System.Diagnostics.ProcessStartInfo
-             {
-                 FileName = "https://kaaner4mir.github.io/Bio/",
-                 UseShellExecute = true
-             });
+            try
+            {
+                System.Diagnostics.Process.Start(
+                 new System.Diagnostics.ProcessStartInfo
+                 {
+                     FileName = "https://kaaner4mir.github.io/Bio/",
+                     UseShellExecute = true
+                 });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while opening the website: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -266,33 +375,48 @@ namespace LibraryTrackingSystem
         /// </summary>
         private void tbxSearch_TextChanged(object sender, EventArgs e)
         {
-            if (dgwBooks.DataSource is DataTable table)
+            try
             {
-                DataView dv = table.DefaultView;
-
-                string searchTerm = tbxSearch.Text.Replace("'", "''");
-
-                if (string.IsNullOrWhiteSpace(searchTerm))
+                if (dgwBooks.DataSource is DataTable table)
                 {
-                    dv.RowFilter = string.Empty;
+                    DataView dv = table.DefaultView;
+
+                    string searchTerm = tbxSearch.Text.Replace("'", "''");
+
+                    if (string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        dv.RowFilter = string.Empty;
+                    }
+                    else
+                    {
+                        dv.RowFilter = string.Format(
+                            "CONVERT(BookId, 'System.String') LIKE '%{0}%' OR " +
+                            "Title LIKE '%{0}%' OR " +
+                            "Author LIKE '%{0}%' OR " +
+                            "Genre LIKE '%{0}%'",
+                            searchTerm
+                        );
+                    }
                 }
-                else
-                {
-                    dv.RowFilter = string.Format(
-                        "CONVERT(BookId, 'System.String') LIKE '%{0}%' OR " +
-                        "Title LIKE '%{0}%' OR " +
-                        "Author LIKE '%{0}%' OR " +
-                        "Genre LIKE '%{0}%'",
-                        searchTerm
-                    );
-                }
+            }
+            catch (Exception ex)
+            {
+                // Silently handle search errors to avoid disrupting user experience
+                // Could log the error if logging is implemented
             }
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            lblDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy dddd HH:mm:ss", CultureInfo.CurrentCulture);
-            ;
+            try
+            {
+                lblDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy dddd HH:mm:ss", CultureInfo.CurrentCulture);
+            }
+            catch (Exception ex)
+            {
+                // Silently handle timer errors to avoid disrupting user experience
+                // Could log the error if logging is implemented
+            }
         }
     }
 }
