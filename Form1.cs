@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -290,7 +291,8 @@ namespace LibraryTrackingSystem
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            lblDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy dddd HH:mm:ss");
+            lblDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy dddd HH:mm:ss", CultureInfo.CurrentCulture);
+            ;
         }
     }
 }
