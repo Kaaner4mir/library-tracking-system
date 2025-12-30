@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Configuration;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace LibraryTrackingSystem
 {
-    public partial class Form : System.Windows.Forms.Form
+    public partial class mainForm : System.Windows.Forms.Form
     {
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -20,21 +22,34 @@ namespace LibraryTrackingSystem
 
         string _connectionString = ConfigurationManager.ConnectionStrings["BooksDB"].ConnectionString;
 
-        public Form()
+        public mainForm()
         {
             InitializeComponent();
+            ToolTipMessage();
+        }
 
+        /// <summary>
+        /// Provides information about the functionality of the icons.
+        /// </summary>
+        private void ToolTipMessage()
+        {
             toolTip.SetToolTip(btnSave, "Adds book information to the system");
             toolTip.SetToolTip(btnUpdate, "Updates book information");
             toolTip.SetToolTip(btnDelete, "Deletes book information");
             toolTip.SetToolTip(btnClear, "Clears input fields");
+            toolTip.SetToolTip(pbxHelp, "Operation panel allows users to perform book adding, updating, deleting, and clearing operations sequentially.\r\nThrough the search panel, books can be filtered by ID number, title, author, and genre.\r\nIn the upper-left panel, the current date and time are displayed in the dd.MM.yyyy – dddd – HH:mm:ss format.");
+            toolTip.SetToolTip(pbxAbout, "Go Web Site");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             ListBooks();
+            timer.Start();
         }
 
+        /// <summary>
+        /// List Books
+        /// </summary>
         void ListBooks()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -47,6 +62,9 @@ namespace LibraryTrackingSystem
             }
         }
 
+        /// <summary>
+        /// You can drag the window using the top panel.
+        /// </summary>
         private void pnlTitleBar_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -73,6 +91,9 @@ namespace LibraryTrackingSystem
                 : FormWindowState.Normal;
         }
 
+        /// <summary>
+        /// Adds books
+        /// </summary>
         private void btnSave_Click(object sender, EventArgs e)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -97,15 +118,19 @@ namespace LibraryTrackingSystem
                 }
             }
 
-            MessageBox.Show("Book added successfully.");
+            MessageBox.Show("Book added successfully.", "Successful transaction");
+            Clear();
             ListBooks();
         }
 
+        /// <summary>
+        /// It performs the process of updating the requested book information.
+        /// </summary>
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(tbxId.Text))
             {
-                MessageBox.Show("Please select a book first.");
+                MessageBox.Show("Please select a book first.", "Warning");
                 return;
             }
 
@@ -134,10 +159,14 @@ namespace LibraryTrackingSystem
                 }
             }
 
-            MessageBox.Show("Book updated successfully.");
+            MessageBox.Show("Book updated successfully.", "Successful transaction");
+            Clear();
             ListBooks();
         }
 
+        /// <summary>
+        /// This allows the information about the book in the selected row to be displayed in the panel.
+        /// </summary>
         private void dgwBooks_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -170,6 +199,98 @@ namespace LibraryTrackingSystem
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Cleans the panel
+        /// </summary>
+        void Clear()
+        {
+            tbxId.Clear();
+            tbxTitle.Clear();
+            tbxAuthor.Clear();
+            tbxGenre.Clear();
+            tbxLanguage.Clear();
+            tbxPublisher.Clear();
+            tbxPublicationYear.Clear();
+            tbxPageCount.Clear();
+            tbxSearch.Clear();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            Clear();
+        }
+
+        /// <summary>
+        /// Deletes the selected book.
+        /// </summary>
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbxId.Text))
+            {
+                MessageBox.Show("Please select a book first.", "Warning");
+                return;
+            }
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string commandText = "DELETE FROM Books WHERE BookId=@bookId";
+
+                using (SqlCommand command = new SqlCommand(commandText, connection))
+                {
+                    command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("The book has been successfully deleted!", "Successful transaction");
+            Clear();
+            ListBooks();
+        }
+
+        private void pbxAbout_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(
+             new System.Diagnostics.ProcessStartInfo
+             {
+                 FileName = "https://kaaner4mir.github.io/Bio/",
+                 UseShellExecute = true
+             });
+        }
+
+        /// <summary>
+        /// It performs the filtering process
+        /// </summary>
+        private void tbxSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (dgwBooks.DataSource is DataTable table)
+            {
+                DataView dv = table.DefaultView;
+
+                string searchTerm = tbxSearch.Text.Replace("'", "''");
+
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    dv.RowFilter = string.Empty;
+                }
+                else
+                {
+                    dv.RowFilter = string.Format(
+                        "CONVERT(BookId, 'System.String') LIKE '%{0}%' OR " +
+                        "Title LIKE '%{0}%' OR " +
+                        "Author LIKE '%{0}%' OR " +
+                        "Genre LIKE '%{0}%'",
+                        searchTerm
+                    );
+                }
+            }
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            lblDateTime.Text = DateTime.Now.ToString("dd.MM.yyyy dddd HH:mm:ss");
         }
     }
 }
