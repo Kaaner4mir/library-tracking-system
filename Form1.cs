@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace LibraryTrackingSystem
@@ -17,41 +12,40 @@ namespace LibraryTrackingSystem
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+
+        [DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
 
         string _connectionString = ConfigurationManager.ConnectionStrings["BooksDB"].ConnectionString;
 
-
         public Form()
         {
             InitializeComponent();
+
+            toolTip.SetToolTip(btnSave, "Adds book information to the system");
+            toolTip.SetToolTip(btnUpdate, "Updates book information");
+            toolTip.SetToolTip(btnDelete, "Deletes book information");
+            toolTip.SetToolTip(btnClear, "Clears input fields");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            List();
-
+            ListBooks();
         }
 
-        void List()
+        void ListBooks()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string command = "SELECT * FROM Books";
-                using (SqlDataAdapter adapter = new SqlDataAdapter(command, connection))
-                {
-                    DataTable table = new DataTable();
-                    adapter.Fill(table);
-                    dgwBooks.DataSource = table;
-                }
+                SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Books", connection);
+                DataTable table = new DataTable();
+                adapter.Fill(table);
+                dgwBooks.DataSource = table;
             }
         }
-
-
 
         private void pnlTitleBar_MouseDown(object sender, MouseEventArgs e)
         {
@@ -69,15 +63,113 @@ namespace LibraryTrackingSystem
 
         private void btnIconState_Click(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            WindowState = FormWindowState.Minimized;
         }
 
         private void btnWindowControl_Click(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Normal)
-                this.WindowState = FormWindowState.Maximized;
-            else
-                this.WindowState = FormWindowState.Normal;
+            WindowState = WindowState == FormWindowState.Normal
+                ? FormWindowState.Maximized
+                : FormWindowState.Normal;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"INSERT INTO Books
+                                (Title, Genre, Author, Language, Publisher, PageCount, PublicationYear)
+                                VALUES (@title, @genre, @author, @language, @publisher, @pageCount, @year)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@title", tbxTitle.Text);
+                    command.Parameters.AddWithValue("@genre", tbxGenre.Text);
+                    command.Parameters.AddWithValue("@author", tbxAuthor.Text);
+                    command.Parameters.AddWithValue("@language", tbxLanguage.Text);
+                    command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
+                    command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
+                    command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
+
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("Book added successfully.");
+            ListBooks();
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbxId.Text))
+            {
+                MessageBox.Show("Please select a book first.");
+                return;
+            }
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = @"UPDATE Books SET
+                                 Title=@title, Genre=@genre, Author=@author,
+                                 Language=@language, Publisher=@publisher,
+                                 PageCount=@pageCount, PublicationYear=@year
+                                 WHERE BookId=@bookId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@bookId", int.Parse(tbxId.Text));
+                    command.Parameters.AddWithValue("@title", tbxTitle.Text);
+                    command.Parameters.AddWithValue("@genre", tbxGenre.Text);
+                    command.Parameters.AddWithValue("@author", tbxAuthor.Text);
+                    command.Parameters.AddWithValue("@language", tbxLanguage.Text);
+                    command.Parameters.AddWithValue("@publisher", tbxPublisher.Text);
+                    command.Parameters.AddWithValue("@pageCount", int.Parse(tbxPageCount.Text));
+                    command.Parameters.AddWithValue("@year", int.Parse(tbxPublicationYear.Text));
+
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("Book updated successfully.");
+            ListBooks();
+        }
+
+        private void dgwBooks_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            int bookId = Convert.ToInt32(dgwBooks.Rows[e.RowIndex].Cells[0].Value);
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM Books WHERE BookId=@bookId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@bookId", bookId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            tbxId.Text = reader["BookId"].ToString();
+                            tbxTitle.Text = reader["Title"].ToString();
+                            tbxGenre.Text = reader["Genre"].ToString();
+                            tbxAuthor.Text = reader["Author"].ToString();
+                            tbxLanguage.Text = reader["Language"].ToString();
+                            tbxPublisher.Text = reader["Publisher"].ToString();
+                            tbxPageCount.Text = reader["PageCount"].ToString();
+                            tbxPublicationYear.Text = reader["PublicationYear"].ToString();
+                        }
+                    }
+                }
+            }
         }
     }
 }

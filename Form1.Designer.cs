@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
             this.dgwBooks = new System.Windows.Forms.DataGridView();
             this.pnlTitleBar = new System.Windows.Forms.Panel();
@@ -35,25 +36,34 @@
             this.btnIconState = new System.Windows.Forms.Button();
             this.btnCrossMark = new System.Windows.Forms.Button();
             this.pnlOperation = new System.Windows.Forms.Panel();
-            this.tbxId = new System.Windows.Forms.TextBox();
-            this.lblId = new System.Windows.Forms.Label();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.tbxTitle = new System.Windows.Forms.TextBox();
-            this.lblAuthor = new System.Windows.Forms.Label();
-            this.tbxAuthor = new System.Windows.Forms.TextBox();
-            this.lbl = new System.Windows.Forms.Label();
-            this.tbxGenre = new System.Windows.Forms.TextBox();
-            this.lblPublicationYear = new System.Windows.Forms.Label();
-            this.lblPageCount = new System.Windows.Forms.Label();
-            this.lblPublisher = new System.Windows.Forms.Label();
-            this.lblLanguage = new System.Windows.Forms.Label();
+            this.btnClear = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnUpdate = new System.Windows.Forms.Button();
             this.tbxPublicationYear = new System.Windows.Forms.TextBox();
             this.tbxPageCount = new System.Windows.Forms.TextBox();
             this.tbxPublisher = new System.Windows.Forms.TextBox();
             this.tbxLanguage = new System.Windows.Forms.TextBox();
+            this.lblPublicationYear = new System.Windows.Forms.Label();
+            this.lblPageCount = new System.Windows.Forms.Label();
+            this.lblPublisher = new System.Windows.Forms.Label();
+            this.lblLanguage = new System.Windows.Forms.Label();
+            this.lblGenre = new System.Windows.Forms.Label();
+            this.tbxGenre = new System.Windows.Forms.TextBox();
+            this.lblAuthor = new System.Windows.Forms.Label();
+            this.tbxAuthor = new System.Windows.Forms.TextBox();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.tbxTitle = new System.Windows.Forms.TextBox();
+            this.lblId = new System.Windows.Forms.Label();
+            this.tbxId = new System.Windows.Forms.TextBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.pnlSearch = new System.Windows.Forms.Panel();
+            this.lblSearch = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgwBooks)).BeginInit();
             this.pnlTitleBar.SuspendLayout();
             this.pnlOperation.SuspendLayout();
+            this.pnlSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgwBooks
@@ -66,6 +76,7 @@
             this.dgwBooks.Name = "dgwBooks";
             this.dgwBooks.Size = new System.Drawing.Size(714, 765);
             this.dgwBooks.TabIndex = 0;
+            this.dgwBooks.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgwBooks_CellClick);
             // 
             // pnlTitleBar
             // 
@@ -142,6 +153,9 @@
             this.pnlOperation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.pnlOperation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(170)))), ((int)(((byte)(185)))), ((int)(((byte)(154)))));
+            this.pnlOperation.Controls.Add(this.btnClear);
+            this.pnlOperation.Controls.Add(this.btnDelete);
+            this.pnlOperation.Controls.Add(this.btnUpdate);
             this.pnlOperation.Controls.Add(this.tbxPublicationYear);
             this.pnlOperation.Controls.Add(this.tbxPageCount);
             this.pnlOperation.Controls.Add(this.tbxPublisher);
@@ -150,7 +164,7 @@
             this.pnlOperation.Controls.Add(this.lblPageCount);
             this.pnlOperation.Controls.Add(this.lblPublisher);
             this.pnlOperation.Controls.Add(this.lblLanguage);
-            this.pnlOperation.Controls.Add(this.lbl);
+            this.pnlOperation.Controls.Add(this.lblGenre);
             this.pnlOperation.Controls.Add(this.tbxGenre);
             this.pnlOperation.Controls.Add(this.lblAuthor);
             this.pnlOperation.Controls.Add(this.tbxAuthor);
@@ -158,127 +172,72 @@
             this.pnlOperation.Controls.Add(this.tbxTitle);
             this.pnlOperation.Controls.Add(this.lblId);
             this.pnlOperation.Controls.Add(this.tbxId);
+            this.pnlOperation.Controls.Add(this.btnSave);
             this.pnlOperation.Location = new System.Drawing.Point(746, 57);
             this.pnlOperation.Name = "pnlOperation";
-            this.pnlOperation.Size = new System.Drawing.Size(487, 765);
+            this.pnlOperation.Size = new System.Drawing.Size(487, 598);
             this.pnlOperation.TabIndex = 4;
             // 
-            // tbxId
+            // btnClear
             // 
-            this.tbxId.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tbxId.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.tbxId.Location = new System.Drawing.Point(186, 34);
-            this.tbxId.Name = "tbxId";
-            this.tbxId.ReadOnly = true;
-            this.tbxId.Size = new System.Drawing.Size(278, 26);
-            this.tbxId.TabIndex = 0;
+            this.btnClear.BackColor = System.Drawing.Color.Transparent;
+            this.btnClear.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnClear.BackgroundImage")));
+            this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnClear.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnClear.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+            this.btnClear.FlatAppearance.BorderSize = 0;
+            this.btnClear.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnClear.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClear.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnClear.Location = new System.Drawing.Point(376, 504);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(60, 60);
+            this.btnClear.TabIndex = 21;
+            this.btnClear.Tag = "";
+            this.btnClear.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnClear.UseVisualStyleBackColor = false;
             // 
-            // lblId
+            // btnDelete
             // 
-            this.lblId.AutoSize = true;
-            this.lblId.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblId.Location = new System.Drawing.Point(136, 34);
-            this.lblId.Name = "lblId";
-            this.lblId.Size = new System.Drawing.Size(31, 26);
-            this.lblId.TabIndex = 1;
-            this.lblId.Text = "ID";
+            this.btnDelete.BackColor = System.Drawing.Color.Transparent;
+            this.btnDelete.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnDelete.BackgroundImage")));
+            this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnDelete.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDelete.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+            this.btnDelete.FlatAppearance.BorderSize = 0;
+            this.btnDelete.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnDelete.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDelete.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnDelete.Location = new System.Drawing.Point(263, 504);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(60, 60);
+            this.btnDelete.TabIndex = 20;
+            this.btnDelete.Tag = "";
+            this.btnDelete.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnDelete.UseVisualStyleBackColor = false;
             // 
-            // lblTitle
+            // btnUpdate
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblTitle.Location = new System.Drawing.Point(117, 91);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(50, 26);
-            this.lblTitle.TabIndex = 3;
-            this.lblTitle.Text = "Title";
-            // 
-            // tbxTitle
-            // 
-            this.tbxTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tbxTitle.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.tbxTitle.Location = new System.Drawing.Point(186, 94);
-            this.tbxTitle.Name = "tbxTitle";
-            this.tbxTitle.Size = new System.Drawing.Size(278, 26);
-            this.tbxTitle.TabIndex = 2;
-            // 
-            // lblAuthor
-            // 
-            this.lblAuthor.AutoSize = true;
-            this.lblAuthor.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblAuthor.Location = new System.Drawing.Point(95, 148);
-            this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(72, 26);
-            this.lblAuthor.TabIndex = 5;
-            this.lblAuthor.Text = "Author";
-            // 
-            // tbxAuthor
-            // 
-            this.tbxAuthor.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tbxAuthor.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.tbxAuthor.Location = new System.Drawing.Point(186, 147);
-            this.tbxAuthor.Name = "tbxAuthor";
-            this.tbxAuthor.Size = new System.Drawing.Size(278, 26);
-            this.tbxAuthor.TabIndex = 4;
-            // 
-            // lbl
-            // 
-            this.lbl.AutoSize = true;
-            this.lbl.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lbl.Location = new System.Drawing.Point(102, 205);
-            this.lbl.Name = "lbl";
-            this.lbl.Size = new System.Drawing.Size(65, 26);
-            this.lbl.TabIndex = 7;
-            this.lbl.Text = "Genre";
-            // 
-            // tbxGenre
-            // 
-            this.tbxGenre.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tbxGenre.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.tbxGenre.Location = new System.Drawing.Point(186, 205);
-            this.tbxGenre.Name = "tbxGenre";
-            this.tbxGenre.Size = new System.Drawing.Size(278, 26);
-            this.tbxGenre.TabIndex = 6;
-            // 
-            // lblPublicationYear
-            // 
-            this.lblPublicationYear.AutoSize = true;
-            this.lblPublicationYear.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblPublicationYear.Location = new System.Drawing.Point(17, 433);
-            this.lblPublicationYear.Name = "lblPublicationYear";
-            this.lblPublicationYear.Size = new System.Drawing.Size(150, 26);
-            this.lblPublicationYear.TabIndex = 11;
-            this.lblPublicationYear.Text = "Publication Year";
-            // 
-            // lblPageCount
-            // 
-            this.lblPageCount.AutoSize = true;
-            this.lblPageCount.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblPageCount.Location = new System.Drawing.Point(57, 376);
-            this.lblPageCount.Name = "lblPageCount";
-            this.lblPageCount.Size = new System.Drawing.Size(110, 26);
-            this.lblPageCount.TabIndex = 10;
-            this.lblPageCount.Text = "Page Count";
-            // 
-            // lblPublisher
-            // 
-            this.lblPublisher.AutoSize = true;
-            this.lblPublisher.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblPublisher.Location = new System.Drawing.Point(75, 319);
-            this.lblPublisher.Name = "lblPublisher";
-            this.lblPublisher.Size = new System.Drawing.Size(92, 26);
-            this.lblPublisher.TabIndex = 9;
-            this.lblPublisher.Text = "Publisher";
-            // 
-            // lblLanguage
-            // 
-            this.lblLanguage.AutoSize = true;
-            this.lblLanguage.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblLanguage.Location = new System.Drawing.Point(73, 262);
-            this.lblLanguage.Name = "lblLanguage";
-            this.lblLanguage.Size = new System.Drawing.Size(94, 26);
-            this.lblLanguage.TabIndex = 8;
-            this.lblLanguage.Text = "Language";
+            this.btnUpdate.BackColor = System.Drawing.Color.Transparent;
+            this.btnUpdate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnUpdate.BackgroundImage")));
+            this.btnUpdate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnUpdate.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+            this.btnUpdate.FlatAppearance.BorderSize = 0;
+            this.btnUpdate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnUpdate.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnUpdate.Location = new System.Drawing.Point(150, 504);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(60, 60);
+            this.btnUpdate.TabIndex = 19;
+            this.btnUpdate.Tag = "";
+            this.btnUpdate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnUpdate.UseVisualStyleBackColor = false;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // tbxPublicationYear
             // 
@@ -316,6 +275,173 @@
             this.tbxLanguage.Size = new System.Drawing.Size(278, 26);
             this.tbxLanguage.TabIndex = 12;
             // 
+            // lblPublicationYear
+            // 
+            this.lblPublicationYear.AutoSize = true;
+            this.lblPublicationYear.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblPublicationYear.Location = new System.Drawing.Point(17, 433);
+            this.lblPublicationYear.Name = "lblPublicationYear";
+            this.lblPublicationYear.Size = new System.Drawing.Size(148, 26);
+            this.lblPublicationYear.TabIndex = 11;
+            this.lblPublicationYear.Text = "Publication Year";
+            // 
+            // lblPageCount
+            // 
+            this.lblPageCount.AutoSize = true;
+            this.lblPageCount.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblPageCount.Location = new System.Drawing.Point(57, 376);
+            this.lblPageCount.Name = "lblPageCount";
+            this.lblPageCount.Size = new System.Drawing.Size(109, 26);
+            this.lblPageCount.TabIndex = 10;
+            this.lblPageCount.Text = "Page Count";
+            // 
+            // lblPublisher
+            // 
+            this.lblPublisher.AutoSize = true;
+            this.lblPublisher.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblPublisher.Location = new System.Drawing.Point(75, 319);
+            this.lblPublisher.Name = "lblPublisher";
+            this.lblPublisher.Size = new System.Drawing.Size(91, 26);
+            this.lblPublisher.TabIndex = 9;
+            this.lblPublisher.Text = "Publisher";
+            // 
+            // lblLanguage
+            // 
+            this.lblLanguage.AutoSize = true;
+            this.lblLanguage.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblLanguage.Location = new System.Drawing.Point(73, 262);
+            this.lblLanguage.Name = "lblLanguage";
+            this.lblLanguage.Size = new System.Drawing.Size(93, 26);
+            this.lblLanguage.TabIndex = 8;
+            this.lblLanguage.Text = "Language";
+            // 
+            // lblGenre
+            // 
+            this.lblGenre.AutoSize = true;
+            this.lblGenre.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblGenre.Location = new System.Drawing.Point(102, 205);
+            this.lblGenre.Name = "lblGenre";
+            this.lblGenre.Size = new System.Drawing.Size(63, 26);
+            this.lblGenre.TabIndex = 7;
+            this.lblGenre.Text = "Genre";
+            // 
+            // tbxGenre
+            // 
+            this.tbxGenre.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbxGenre.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.tbxGenre.Location = new System.Drawing.Point(186, 205);
+            this.tbxGenre.Name = "tbxGenre";
+            this.tbxGenre.Size = new System.Drawing.Size(278, 26);
+            this.tbxGenre.TabIndex = 6;
+            // 
+            // lblAuthor
+            // 
+            this.lblAuthor.AutoSize = true;
+            this.lblAuthor.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblAuthor.Location = new System.Drawing.Point(95, 148);
+            this.lblAuthor.Name = "lblAuthor";
+            this.lblAuthor.Size = new System.Drawing.Size(71, 26);
+            this.lblAuthor.TabIndex = 5;
+            this.lblAuthor.Text = "Author";
+            // 
+            // tbxAuthor
+            // 
+            this.tbxAuthor.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbxAuthor.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.tbxAuthor.Location = new System.Drawing.Point(186, 147);
+            this.tbxAuthor.Name = "tbxAuthor";
+            this.tbxAuthor.Size = new System.Drawing.Size(278, 26);
+            this.tbxAuthor.TabIndex = 4;
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblTitle.Location = new System.Drawing.Point(117, 91);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(49, 26);
+            this.lblTitle.TabIndex = 3;
+            this.lblTitle.Text = "Title";
+            // 
+            // tbxTitle
+            // 
+            this.tbxTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbxTitle.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.tbxTitle.Location = new System.Drawing.Point(186, 94);
+            this.tbxTitle.Name = "tbxTitle";
+            this.tbxTitle.Size = new System.Drawing.Size(278, 26);
+            this.tbxTitle.TabIndex = 2;
+            // 
+            // lblId
+            // 
+            this.lblId.AutoSize = true;
+            this.lblId.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblId.Location = new System.Drawing.Point(136, 34);
+            this.lblId.Name = "lblId";
+            this.lblId.Size = new System.Drawing.Size(30, 26);
+            this.lblId.TabIndex = 1;
+            this.lblId.Text = "ID";
+            // 
+            // tbxId
+            // 
+            this.tbxId.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbxId.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.tbxId.Location = new System.Drawing.Point(186, 34);
+            this.tbxId.Name = "tbxId";
+            this.tbxId.ReadOnly = true;
+            this.tbxId.Size = new System.Drawing.Size(278, 26);
+            this.tbxId.TabIndex = 0;
+            // 
+            // btnSave
+            // 
+            this.btnSave.BackColor = System.Drawing.Color.Transparent;
+            this.btnSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnSave.BackgroundImage")));
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSave.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
+            this.btnSave.FlatAppearance.BorderSize = 0;
+            this.btnSave.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSave.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnSave.Location = new System.Drawing.Point(37, 504);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(60, 60);
+            this.btnSave.TabIndex = 18;
+            this.btnSave.Tag = "";
+            this.btnSave.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnSave.UseVisualStyleBackColor = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // pnlSearch
+            // 
+            this.pnlSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(168)))), ((int)(((byte)(187)))), ((int)(((byte)(163)))));
+            this.pnlSearch.Controls.Add(this.lblSearch);
+            this.pnlSearch.Controls.Add(this.textBox1);
+            this.pnlSearch.Location = new System.Drawing.Point(746, 672);
+            this.pnlSearch.Name = "pnlSearch";
+            this.pnlSearch.Size = new System.Drawing.Size(487, 150);
+            this.pnlSearch.TabIndex = 5;
+            // 
+            // lblSearch
+            // 
+            this.lblSearch.AutoSize = true;
+            this.lblSearch.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblSearch.Location = new System.Drawing.Point(34, 57);
+            this.lblSearch.Name = "lblSearch";
+            this.lblSearch.Size = new System.Drawing.Size(132, 26);
+            this.lblSearch.TabIndex = 22;
+            this.lblSearch.Text = "Search a book";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Font = new System.Drawing.Font("Century", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.textBox1.Location = new System.Drawing.Point(186, 57);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(278, 26);
+            this.textBox1.TabIndex = 22;
+            // 
             // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -323,6 +449,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(221)))), ((int)(((byte)(208)))));
             this.ClientSize = new System.Drawing.Size(1253, 848);
+            this.Controls.Add(this.pnlSearch);
             this.Controls.Add(this.pnlOperation);
             this.Controls.Add(this.btnCrossMark);
             this.Controls.Add(this.pnlTitleBar);
@@ -336,6 +463,8 @@
             this.pnlTitleBar.ResumeLayout(false);
             this.pnlOperation.ResumeLayout(false);
             this.pnlOperation.PerformLayout();
+            this.pnlSearch.ResumeLayout(false);
+            this.pnlSearch.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -358,12 +487,20 @@
         private System.Windows.Forms.Label lblPageCount;
         private System.Windows.Forms.Label lblPublisher;
         private System.Windows.Forms.Label lblLanguage;
-        private System.Windows.Forms.Label lbl;
+        private System.Windows.Forms.Label lblGenre;
         private System.Windows.Forms.TextBox tbxGenre;
         private System.Windows.Forms.Label lblAuthor;
         private System.Windows.Forms.TextBox tbxAuthor;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.TextBox tbxTitle;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Panel pnlSearch;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label lblSearch;
     }
 }
 
